@@ -1,3 +1,12 @@
+/*
+ * Projet Java
+ *
+ * Créé par :
+ * PRAK Billy
+ * PERNON Neil
+ * SANTOS Emmanuel
+ */
+
 package station;
 
 public abstract class Prestation {

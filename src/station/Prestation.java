@@ -10,11 +10,15 @@
 package station;
 
 public abstract class Prestation {
-    private String categorie;
+    protected String categorie;
 
-    // Étapes de la prestation
+    public Prestation(String categorie) {
+        this.categorie = categorie;
+    }
+
     public abstract double lavage();
     public abstract double sechage();
     public abstract double prelavage();
     public abstract double nettoyage();
 }
+

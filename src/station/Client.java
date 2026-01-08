@@ -49,4 +49,12 @@ public class Client {
         return this.nom.compareTo(c.getNom()) > 0;
     }
 
+    @Override
+public String toString() {
+    if (mail != null)
+        return id + " : " + nom + " : " + numTel + " : " + mail;
+    else
+        return id + " : " + nom + " : " + numTel;
+}
+
 }

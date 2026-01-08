@@ -1,2 +1,2 @@
 # Projet-Java-S5
-Moodèle de station de lavage en Java
+Modèle de station de lavage en Java

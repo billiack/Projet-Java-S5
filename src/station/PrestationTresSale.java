@@ -18,6 +18,7 @@ public class PrestationTresSale extends Prestation {
         this.typeSalissure = typeSalissure;
     }
 
+    // Ajoute un surcoût pour les taches
     private double surcout() {
         if (typeSalissure == 1) {
             return 5;

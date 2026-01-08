@@ -35,6 +35,7 @@ public class Etablissement {
         }
     }
 
+    // Vérifie si un client existe déjà
     public Client rechercher(String nom, String numTel) {
         for (int i = 0; i < nbClients; i++) {
             if (clients[i].getNom().equals(nom) && clients[i].getNumTel().equals(numTel)) {
@@ -44,6 +45,7 @@ public class Etablissement {
         return null;
     }
 
+    // Ajoute un client dans l'établissement
     public Client ajouter(String nom, String numTel) {
         if (nbClients >= clients.length) {
             System.out.println("Capacité maximale de clients atteinte.");

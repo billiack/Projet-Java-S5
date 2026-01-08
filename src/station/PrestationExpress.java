@@ -40,6 +40,7 @@ public class PrestationExpress extends Prestation {
         }
     }
 
+    // Pas de prélavage
     @Override
     public double prelavage() {
         return 0;

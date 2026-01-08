@@ -27,7 +27,7 @@ public class Client {
         this.numTel = numTel;
         this.mail = mail;
     }
-
+    // Getters et setters
     public int getId() {
         return id;
     }
@@ -44,6 +44,7 @@ public class Client {
         return mail;
     }
 
+    // Fonction pour comparer lexicographiquement deux noms de clients.
     public boolean placerApres(Client c) {
         return this.nom.compareTo(c.getNom()) > 0;
     }

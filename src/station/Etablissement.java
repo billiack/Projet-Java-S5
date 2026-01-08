@@ -8,18 +8,29 @@
  */
 
 package station;
+import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Scanner;
 
 public class Etablissement {
     private String nom;
     private Client[] clients;
     private int nbClients;
     private RendezVous[][] rendezVous;
+    private LocalDate debutSemaine;
+    private LocalTime[] heures;
 
     public Etablissement(String nom) {
         this.nom = nom;
         this.clients = new Client[100];
         this.nbClients = 0;
         this.rendezVous = new RendezVous[10][7]; // ligne : créneaux, colonne : jours
+        this.debutSemaine = LocalDate.now().plusDays(1);
+        this.heures = new LocalTime[10];
+        for (int i = 0; i < heures.length; i++) {
+            heures[i] = LocalTime.of(8 + i, 0);
+        }
     }
 
     private void trierClients() {
@@ -76,5 +87,217 @@ public class Etablissement {
         nbClients++;
         trierClients();
         return nouveauClient;
+    }
+    
+    // Rechercher un créneau pour un jour donné
+    public LocalDateTime rechercher(LocalDate jour) {
+        // Calculer l'index du jour dans la semaine (0-6)
+        int indexJour = -1;
+        for (int j = 0; j < 7; j++) {
+            if (debutSemaine.plusDays(j).equals(jour)) {
+                indexJour = j;
+                break;
+            }
+        }
+        if (indexJour == -1) {
+            System.out.println("Le jour " + jour + " n'est pas dans la semaine planifiée.");
+            return null;
+        }
+        System.out.println("Heures disponibles pour le " + jour + " :");
+        int compteur = 0;
+        for (int i = 0; i < rendezVous.length; i++) {
+            if (rendezVous[i][indexJour] == null) {
+                compteur++;
+                System.out.println(compteur + ". " + heures[i]);
+            }
+        }
+        if (compteur == 0) {
+            System.out.println("Aucune heure disponible pour ce jour.");
+            return null;
+        }
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Choisissez le numéro de l'heure souhaitée : ");
+        int choix = scanner.nextInt();
+        
+        if (choix < 1 || choix > compteur) {
+            System.out.println("Choix invalide.");
+            return null;
+        }
+        int compteurTemp = 0;
+        for (int i = 0; i < rendezVous.length; i++) {
+            if (rendezVous[i][indexJour] == null) {
+                compteurTemp++;
+                if (compteurTemp == choix) {
+                    return LocalDateTime.of(jour, heures[i]);
+                }
+            }
+        }
+        
+        return null;
+    }
+    
+    // Rechercher un créneau pour une heure donnée
+    public LocalDateTime rechercher(LocalTime heure) {
+        int indexHeure = -1;
+        for (int i = 0; i < heures.length; i++) {
+            if (heures[i].equals(heure)) {
+                indexHeure = i;
+                break;
+            }
+        }
+        
+        if (indexHeure == -1) {
+            System.out.println("L'heure " + heure + " n'est pas un créneau proposé.");
+            return null;
+        }
+        System.out.println("Jours disponibles à " + heure + " :");
+        int compteur = 0;
+        for (int j = 0; j < 7; j++) {
+            if (rendezVous[indexHeure][j] == null) {
+                compteur++;
+                LocalDate jour = debutSemaine.plusDays(j);
+                System.out.println(compteur + ". " + jour);
+            }
+        }
+        if (compteur == 0) {
+            System.out.println("Aucun jour disponible pour cette heure.");
+            return null;
+        }
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Choisissez le numéro du jour souhaité : ");
+        int choix = scanner.nextInt();
+        
+        if (choix < 1 || choix > compteur) {
+            System.out.println("Choix invalide.");
+            return null;
+        }
+        int compteurTemp = 0;
+        for (int j = 0; j < 7; j++) {
+            if (rendezVous[indexHeure][j] == null) {
+                compteurTemp++;
+                if (compteurTemp == choix) {
+                    LocalDate jour = debutSemaine.plusDays(j);
+                    return LocalDateTime.of(jour, heure);
+                }
+            }
+        }
+        
+        return null;
+    }
+    
+    // Ajouter un rendez-vous pour une prestation express
+    public RendezVous ajouter(Client client, LocalDateTime creneau, String categorie, boolean nettoyageInterieur) {
+        int indexHeure = -1;
+        int indexJour = -1;
+        
+        for (int i = 0; i < heures.length; i++) {
+            if (heures[i].equals(creneau.toLocalTime())) {
+                indexHeure = i;
+                break;
+            }
+        }
+        for (int j = 0; j < 7; j++) {
+            if (debutSemaine.plusDays(j).equals(creneau.toLocalDate())) {
+                indexJour = j;
+                break;
+            }
+        }
+        if (indexHeure == -1 || indexJour == -1) {
+            System.out.println("Le créneau spécifié n'est pas valide.");
+            return null;
+        }
+        if (rendezVous[indexHeure][indexJour] != null) {
+            System.out.println("Ce créneau est déjà réservé.");
+            return null;
+        }
+        PrestationExpress prestation = new PrestationExpress(categorie, nettoyageInterieur);
+        RendezVous rdv = new RendezVous(client, prestation, creneau);
+        rendezVous[indexHeure][indexJour] = rdv;
+        
+        return rdv;
+    }
+    
+    // Ajouter un rendez-vous pour un véhicule sale
+    public RendezVous ajouter(Client client, LocalDateTime creneau, String categorie) {
+        int indexHeure = -1;
+        int indexJour = -1;
+        for (int i = 0; i < heures.length; i++) {
+            if (heures[i].equals(creneau.toLocalTime())) {
+                indexHeure = i;
+                break;
+            }
+        }
+        for (int j = 0; j < 7; j++) {
+            if (debutSemaine.plusDays(j).equals(creneau.toLocalDate())) {
+                indexJour = j;
+                break;
+            }
+        }
+        if (indexHeure == -1 || indexJour == -1) {
+            System.out.println("Le créneau spécifié n'est pas valide.");
+            return null;
+        }
+        if (rendezVous[indexHeure][indexJour] != null) {
+            System.out.println("Ce créneau est déjà réservé.");
+            return null;
+        }
+        PrestationSale prestation = new PrestationSale(categorie);
+        RendezVous rdv = new RendezVous(client, prestation, creneau);
+        rendezVous[indexHeure][indexJour] = rdv;
+        
+        return rdv;
+    }
+    
+    // Ajouter un rendez-vous pour un véhicule très sale
+    public RendezVous ajouter(Client client, LocalDateTime creneau, String categorie, int typeSalissure) {
+        int indexHeure = -1;
+        int indexJour = -1;
+        for (int i = 0; i < heures.length; i++) {
+            if (heures[i].equals(creneau.toLocalTime())) {
+                indexHeure = i;
+                break;
+            }
+        }
+        for (int j = 0; j < 7; j++) {
+            if (debutSemaine.plusDays(j).equals(creneau.toLocalDate())) {
+                indexJour = j;
+                break;
+            }
+        }
+        if (indexHeure == -1 || indexJour == -1) {
+            System.out.println("Le créneau spécifié n'est pas valide.");
+            return null;
+        }
+        if (rendezVous[indexHeure][indexJour] != null) {
+            System.out.println("Ce créneau est déjà réservé.");
+            return null;
+        }
+        PrestationTresSale prestation = new PrestationTresSale(categorie, typeSalissure);
+        RendezVous rdv = new RendezVous(client, prestation, creneau);
+        rendezVous[indexHeure][indexJour] = rdv;
+        return rdv;
+    }
+    
+    public void afficher() {
+        System.out.println("Etablissement : " + nom);
+        System.out.println("Clients :");
+        for (int i = 0; i < nbClients; i++) {
+            System.out.println(clients[i]);
+        }
+        System.out.println("Rendez-vous de la semaine du " + debutSemaine + " au " + debutSemaine.plusDays(6) + " :");
+        for (int j = 0; j < 7; j++) {
+            LocalDate jour = debutSemaine.plusDays(j);
+            // Affiche les rendez-vous pour ce jour s'il y en a
+            boolean rdv = false;
+            for (int i = 0; i < rendezVous.length; i++) {
+                if (rendezVous[i][j] != null) {
+                    if (!rdv) {
+                        System.out.println("Jour : " + jour);
+                        rdv = true;
+                    }
+                    System.out.println("  " + heures[i] + " - " + rendezVous[i][j]);
+                }
+            }
+        }
     }
 }

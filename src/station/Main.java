@@ -9,6 +9,10 @@
 
 package station;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+
 public class Main {
     public static void main(String[] args) {
         System.out.println("=== Test de la Station de Lavage ===\n");
@@ -106,5 +110,51 @@ public class Main {
         PrestationTresSale tresSale4 = new PrestationTresSale("C", 4);
         System.out.println("\n" + tresSale4);
         System.out.println("  Total : " + tresSale4.nettoyage() + " €");
+
+        // Tests des nouveaux rendez-vous avec créneaux
+        System.out.println("\n=== Ajout de rendez-vous ===");
+        
+        // Test des rendez-vous express avec créneau spécifique
+        LocalDateTime creneau1 = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(9, 0));
+        RendezVous rdv1 = station.ajouter(client1, creneau1, "A", false);
+        if (rdv1 != null) {
+            System.out.println("RDV 1 ajouté : " + rdv1);
+        }
+        
+        // Test des rendez-vous sale
+        LocalDateTime creneau2 = LocalDateTime.of(LocalDate.now().plusDays(2), LocalTime.of(10, 0));
+        RendezVous rdv2 = station.ajouter(client2, creneau2, "B");
+        if (rdv2 != null) {
+            System.out.println("RDV 2 ajouté : " + rdv2);
+        }
+        
+        // Test des rendez-vous très sale
+        LocalDateTime creneau3 = LocalDateTime.of(LocalDate.now().plusDays(3), LocalTime.of(14, 0));
+        RendezVous rdv3 = station.ajouter(client3, creneau3, "C", 3);
+        if (rdv3 != null) {
+            System.out.println("RDV 3 ajouté : " + rdv3);
+        }
+        
+        // Test des tentatives d'ajout sur un créneau déjà occupé
+        System.out.println("\n=== Tentative de réservation d'un créneau occupé ===");
+        station.ajouter(client4, creneau1, "A", true);
+
+        // Affichage de l'établissement
+        System.out.println("\n=== État de l'établissement ===");
+        station.afficher();
+
+        // Tests des méthodes de recherche de créneaux
+        System.out.println("\n=== Test de recherche par jour ===");
+        LocalDate jourRecherche = LocalDate.now().plusDays(1);
+        System.out.println("Recherche de créneaux pour le " + jourRecherche);
+        LocalDateTime creneauChoisi = station.rechercher(jourRecherche);
+        System.out.println("Créneau choisi: " + creneauChoisi);
+        
+        System.out.println("\n=== Test de recherche par heure ===");
+        LocalTime heureRecherche = LocalTime.of(11, 0);
+        System.out.println("Recherche de jours disponibles à " + heureRecherche);
+        LocalDateTime creneauChoisi2 = station.rechercher(heureRecherche);
+        System.out.println("Créneau choisi: " + creneauChoisi2);
     }
 }
+

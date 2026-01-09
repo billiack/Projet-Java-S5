@@ -9,6 +9,10 @@
 
 package station;
 import java.time.LocalDateTime;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Scanner;
@@ -425,5 +429,46 @@ public class Etablissement {
         if (!trouve) {
             System.out.println("Aucun rendez-vous pour ce client.");
         }
+    }
+
+    public void versFichierClients(String nomFichier) throws IOException {
+        FileWriter writer;
+        writer = new FileWriter(nomFichier);
+        for (int i = 0; i < nbClients; i++) {
+            writer.write(clients[i].versFichier() + "\n");
+        }
+        writer.close();
+    }
+
+
+    // Format des fichier des clients: 
+    // idClient:nom:numTel
+    // idClient:nom:numTel:mail
+    public Etablissement depuisFichierClients(String nomFichier) throws IOException {
+        FileReader reader = new FileReader(nomFichier);
+        BufferedReader buffer = new BufferedReader(reader);
+        String ligne;
+        Etablissement etab = new Etablissement(this.nom);
+        while ((ligne = buffer.readLine()) != null) {
+            String[] parts = ligne.split(":");
+            if (parts.length == 3) {
+                int id = Integer.parseInt(parts[0]);
+                String nom = parts[1];
+                String numTel = parts[2];
+                Client client = new Client(id, nom, numTel);
+                etab.clients[etab.nbClients] = client;
+                etab.nbClients++;
+            } else if (parts.length == 4) {
+                int id = Integer.parseInt(parts[0]);
+                String nom = parts[1];
+                String numTel = parts[2];
+                String mail = parts[3];
+                Client client = new Client(id, nom, numTel, mail);
+                etab.clients[etab.nbClients] = client;
+                etab.nbClients++;
+            }
+        }
+        buffer.close();
+        return etab;
     }
 }

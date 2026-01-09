@@ -444,11 +444,10 @@ public class Etablissement {
     // Format des fichier des clients: 
     // idClient:nom:numTel
     // idClient:nom:numTel:mail
-    public Etablissement depuisFichierClients(String nomFichier) throws IOException {
+    public void depuisFichierClients(String nomFichier) throws IOException {
         FileReader reader = new FileReader(nomFichier);
         BufferedReader buffer = new BufferedReader(reader);
         String ligne;
-        Etablissement etab = new Etablissement(this.nom);
         while ((ligne = buffer.readLine()) != null) {
             String[] parts = ligne.split(":");
             if (parts.length == 3) {
@@ -456,19 +455,83 @@ public class Etablissement {
                 String nom = parts[1];
                 String numTel = parts[2];
                 Client client = new Client(id, nom, numTel);
-                etab.clients[etab.nbClients] = client;
-                etab.nbClients++;
+                this.clients[this.nbClients] = client;
+                this.nbClients++;
             } else if (parts.length == 4) {
                 int id = Integer.parseInt(parts[0]);
                 String nom = parts[1];
                 String numTel = parts[2];
                 String mail = parts[3];
                 Client client = new Client(id, nom, numTel, mail);
-                etab.clients[etab.nbClients] = client;
-                etab.nbClients++;
+                this.clients[this.nbClients] = client;
+                this.nbClients++;
             }
         }
         buffer.close();
-        return etab;
+    }
+
+    // Format des fichiers des rendez-vous :
+    // yyyy-MM-ddTHH:mm
+    // idClient
+    // categorie:netoyageInterieur:prix (PrestationExpress)
+
+    // yyyy-MM-ddTHH:mm
+    // idClient
+    // categorie:prix (PrestationSale)
+
+    // yyyy-MM-ddTHH:mm
+    // idClient
+    // categorie:typeSalissure:prix (PrestationTresSale)
+    public void versFichierRendezVous(String nomFichier) throws IOException {
+        FileWriter writer = new FileWriter(nomFichier);
+        for (int j = 0; j < 7; j++) {
+            for (int i = 0; i < rendezVous.length; i++) {
+                if (rendezVous[i][j] != null) {
+                    writer.write(rendezVous[i][j].versFichier());
+                }
+            }
+        }
+        writer.close();
+    }
+
+    public void depuisFichierRendezVous(String nomFichier) throws IOException {
+        FileReader reader = new FileReader(nomFichier);
+        BufferedReader buffer = new BufferedReader(reader);
+        String ligne;
+        while ((ligne = buffer.readLine()) != null) {
+            LocalDateTime creneau = LocalDateTime.parse(ligne);;
+            int idClient = Integer.parseInt(buffer.readLine());
+            Client client = null;
+            for (int i = 0; i < nbClients; i++) {
+                if (clients[i].getId() == idClient) {
+                    client = clients[i];
+                    break;
+                }
+            }
+            if (client == null) {
+                System.out.println("Client avec l'ID " + idClient + " non trouvé.");
+                continue;
+            }
+            String[] parts = buffer.readLine().split(":");
+            RendezVous rdv = null;
+            if (parts.length == 3) {
+                if (parts[1].equals("true") || parts[1].equals("false")) {
+                    String categorie = parts[0];
+                    boolean nettoyageInterieur = Boolean.parseBoolean(parts[1]);
+                    rdv = ajouter(client, creneau, categorie, nettoyageInterieur);
+                } else {
+                    String categorie = parts[0];
+                    int typeSalissure = Integer.parseInt(parts[1]);
+                    rdv = ajouter(client, creneau, categorie, typeSalissure);
+                }
+            } else if (parts.length == 2) {
+                String categorie = parts[0];
+                rdv = ajouter(client, creneau, categorie);
+            }
+            if (rdv == null) {
+                System.out.println("Impossible d'ajouter le rendez-vous pour le client ID " + idClient + ".");
+            }
+        }
+        buffer.close();
     }
 }

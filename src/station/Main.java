@@ -170,7 +170,7 @@ public class Main {
         System.out.println("\nAffichage de l'établissement:");
         station.afficher();
 
-        // Export des clients vers un fichier
+        // Export des clients et des rendez-vous vers un fichier
         System.out.println("\n=== Export des clients vers un fichier ===");
         System.out.println("Export des clients réussi vers 'clients_export.txt'");
         try {
@@ -178,13 +178,20 @@ public class Main {
         } catch (IOException e) {
             System.out.println("Erreur lors de l'export des clients : " + e.getMessage());
         }
+        System.out.println("=== Export des rendez-vous vers un fichier ===");
+        try {
+            station.versFichierRendezVous("rendezvous_export.txt");
+        } catch (IOException e) {
+            System.out.println("Erreur lors de l'export des rendez-vous : " + e.getMessage());
+        }
 
-        // Import des clients depuis un fichier
-        System.out.println("\n=== Import des clients depuis un fichier ===");
+        // Import des clients et des rendez-vous depuis un fichier
+        System.out.println("\n=== Import des clients et des rendez-vous depuis un fichier ===");
         Etablissement station2 = new Etablissement("Station 2");
         try {
-            station2 = station2.depuisFichierClients("clients_export.txt");
-            System.out.println("Clients importés :");
+            station2.depuisFichierClients("clients_export.txt");
+            station2.depuisFichierRendezVous("rendezvous_export.txt");
+            System.out.println("Import des clients et des rendez-vous réussi.");
             station2.afficher();
         } catch (IOException e) {
             System.out.println("Erreur lors de l'import des clients : " + e.getMessage());

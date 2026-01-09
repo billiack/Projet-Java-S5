@@ -50,11 +50,17 @@ public class Client {
     }
 
     @Override
-public String toString() {
-    if (mail != null)
-        return id + " : " + nom + " : " + numTel + " : " + mail;
-    else
-        return id + " : " + nom + " : " + numTel;
-}
+    public String toString() {
+        if (mail != null)
+            return id + " : " + nom + " : " + numTel + " : " + mail;
+        else
+            return id + " : " + nom + " : " + numTel;
+    }
 
+    public String versFichier() {
+        if (mail != null)
+            return id + ":" + nom + ":" + numTel + ":" + mail;
+        else
+            return id + ":" + nom + ":" + numTel;
+    }
 }

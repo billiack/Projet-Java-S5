@@ -29,4 +29,19 @@ public class RendezVous {
     public Prestation getPrestation() { return prestation; }
     public LocalDateTime getCreneau() { return creneau; }
     public double getPrix() { return prix; }
+
+    public String versFichier() {
+        String out = creneau.toString() + "\n" + client.getId() + "\n";
+        if (prestation instanceof PrestationExpress) {
+            PrestationExpress pe = (PrestationExpress) prestation;
+            out += pe.getCategorie() + ":" + pe.getNettoyageInterieur() + ":" + prix + "\n";
+        } else if (prestation instanceof PrestationSale) {
+            PrestationSale ps = (PrestationSale) prestation;
+            out += ps.getCategorie() + ":" + prix + "\n";
+        } else if (prestation instanceof PrestationTresSale) {
+            PrestationTresSale pts = (PrestationTresSale) prestation;
+            out += pts.getCategorie() + ":" + pts.getTypeSalissure() + ":" + prix + "\n";
+        }
+        return out;
+    }
 }

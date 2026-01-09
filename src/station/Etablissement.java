@@ -277,6 +277,70 @@ public class Etablissement {
         rendezVous[indexHeure][indexJour] = rdv;
         return rdv;
     }
+
+    // Demande à l'utilisateur de planifier un rendez-vous
+    public void planifier() {
+        System.out.println("La semaine de rendez-vous a été planifiée à partir du " + debutSemaine + " au " + debutSemaine.plusDays(6) + ".");
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Entrez le nom du client : ");
+        String nom = scanner.nextLine();
+        System.out.println("Entrez le numéro de téléphone du client : ");
+        String numTel = scanner.nextLine();
+        Client client = rechercher(nom, numTel);
+        if (client == null) {
+            client = ajouter(nom, numTel);
+            if (client == null) {
+                System.out.println("Impossible d'ajouter le client.");
+                return;
+            }
+        }
+
+        System.out.println("Choisissez un jour pour le rendez-vous.");
+        for (int j = 0; j < 7; j++) {
+            System.out.println((j + 1) + ". " + debutSemaine.plusDays(j));
+        }
+        int choixJour = scanner.nextInt();
+        if (choixJour < 1 || choixJour > 7) {
+            System.out.println("Choix de jour invalide.");
+            return;
+        }
+        LocalDateTime creneau = rechercher(debutSemaine.plusDays(choixJour - 1));
+        
+        System.out.println("Choisissez le type de prestation :\n 1. Prestation Express\n 2. Prestation Sale\n 3. Prestation Très Sale");
+        int choixPrestation = scanner.nextInt();
+        System.out.println("Entrez la catégorie (A, B, C) : ");
+        String categorie = scanner.next();
+        if (categorie.equals("A") == false && categorie.equals("B") == false && categorie.equals("C") == false) {
+            System.out.println("Catégorie invalide.");
+            return;
+        }
+        if (choixPrestation == 1) {
+            System.out.println("Nettoyage intérieur ? (true/false) : ");
+            boolean nettoyageInterieur = scanner.nextBoolean();
+            RendezVous rdv = ajouter(client, creneau, categorie, nettoyageInterieur);
+            if (rdv != null) {
+                System.out.println("Rendez-vous planifié : " + rdv);
+            }
+        } else if (choixPrestation == 2) {
+            RendezVous rdv = ajouter(client, creneau, categorie);
+            if (rdv != null) {
+                System.out.println("Rendez-vous planifié : " + rdv);
+            }
+        } else if (choixPrestation == 3) {
+            System.out.println("Entrez le type de salissure (1-4) : ");
+            int typeSalissure = scanner.nextInt();
+            if (typeSalissure < 1 || typeSalissure > 4) {
+                System.out.println("Type de salissure invalide.");
+                return;
+            }
+            RendezVous rdv = ajouter(client, creneau, categorie, typeSalissure);
+            if (rdv != null) {
+                System.out.println("Rendez-vous planifié : " + rdv);
+            }
+        } else {
+            System.out.println("Choix de prestation invalide.");
+        }
+    }
     
     public void afficher() {
         System.out.println("Etablissement : " + nom);
@@ -298,6 +362,68 @@ public class Etablissement {
                     System.out.println("  " + heures[i] + " - " + rendezVous[i][j]);
                 }
             }
+        }
+    }
+
+    public void afficher(LocalDate jour) {
+        System.out.println("Rendez-vous pour le " + jour + " :");
+        int indexJour = -1;
+        for (int j = 0; j < 7; j++) {
+            if (debutSemaine.plusDays(j).equals(jour)) {
+                indexJour = j;
+                break;
+            }
+        }
+        if (indexJour == -1) {
+            System.out.println("Le jour " + jour + " n'est pas dans la semaine planifiée.");
+            return;
+        }
+        boolean rdv = false;
+        for (int i = 0; i < rendezVous.length; i++) {
+            if (rendezVous[i][indexJour] != null) {
+                if (!rdv) {
+                    rdv = true;
+                }
+                System.out.println("  " + heures[i] + " - " + rendezVous[i][indexJour]);
+            }
+        }
+        if (!rdv) {
+            System.out.println("Aucun rendez-vous pour ce jour.");
+        }
+    }
+
+    // Afficher le(s) client(s) de l'établissement (identifiant : nom ou numéro de téléphone)
+    public void afficher(String identifiant) {
+        System.out.println("Clients correspondant à l'identifiant \"" + identifiant + "\" :");
+        boolean trouve = false;
+        for (int i = 0; i < nbClients; i++) {
+            if (clients[i].getNom().equals(identifiant) || clients[i].getNumTel().equals(identifiant)) {
+                System.out.println(clients[i]);
+                trouve = true;
+            }
+        }
+        if (!trouve) {
+            System.out.println("Aucun client ne correspond à cet identifiant.");
+        }
+    }
+
+    // Affiche les rendez-vous d'un client donné par son ID
+    public void afficher(int idClient) {
+        System.out.println("Rendez-vous pour le client ID " + idClient + " :");
+        boolean trouve = false;
+        for (int j = 0; j < 7; j++) {
+            for (int i = 0; i < rendezVous.length; i++) {
+                if (rendezVous[i][j] != null && rendezVous[i][j].getClient().getId() == idClient) {
+                    if (!trouve) {
+                        trouve = true;
+                    }
+                    LocalDate jour = debutSemaine.plusDays(j);
+                    System.out.println("  " + jour + " " + heures[i] + " - " + rendezVous[i][j]);
+                }
+            }
+        }
+        if (!trouve) {
+            System.out.println("Aucun rendez-vous pour ce client.");
         }
     }
 }

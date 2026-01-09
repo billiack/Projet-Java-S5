@@ -139,10 +139,6 @@ public class Main {
         System.out.println("\n=== Tentative de réservation d'un créneau occupé ===");
         station.ajouter(client4, creneau1, "A", true);
 
-        // Affichage de l'établissement
-        System.out.println("\n=== État de l'établissement ===");
-        station.afficher();
-
         // Tests des méthodes de recherche de créneaux
         System.out.println("\n=== Test de recherche par jour ===");
         LocalDate jourRecherche = LocalDate.now().plusDays(1);
@@ -155,6 +151,23 @@ public class Main {
         System.out.println("Recherche de jours disponibles à " + heureRecherche);
         LocalDateTime creneauChoisi2 = station.rechercher(heureRecherche);
         System.out.println("Créneau choisi: " + creneauChoisi2);
+
+        // Test de la planification
+        System.out.println("\n=== Test de la planification ===");
+        station.planifier();
+
+        // Test des affichages de l'établissement
+        System.out.println("\n=== Test des affichages de l'établissement ===");
+        System.out.println("Affichage des rendez-vous du client avec l'ID 3 :");
+        station.afficher(3);
+        System.out.println("\nAffichage des rendez-vous du client avec le numéro de téléphone 0600000002 :");
+        station.afficher("0600000002");
+        System.out.println("\nAffichage des rendez-vous du client avec le nom Alice :");
+        station.afficher("Alice");
+        System.out.println("\nAffichage des rendez-vous pour le " + LocalDate.now().plusDays(2) + " :");
+        station.afficher(LocalDate.now().plusDays(2));
+        System.out.println("\nAffichage de l'établissement:");
+        station.afficher();
     }
 }
 

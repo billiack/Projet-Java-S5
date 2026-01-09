@@ -18,6 +18,10 @@ public class PrestationExpress extends Prestation {
         this.nettoyageInterieur = nettoyageInterieur;
     }
 
+    public boolean getNettoyageInterieur() {
+        return nettoyageInterieur;
+    }
+
     @Override
     public double lavage() {
         if (categorie.equals("A")) {

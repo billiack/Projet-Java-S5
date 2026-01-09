@@ -16,6 +16,10 @@ public abstract class Prestation {
         this.categorie = categorie;
     }
 
+    public String getCategorie() {
+        return categorie;
+    }
+
     public abstract double lavage();
     public abstract double sechage();
     public abstract double prelavage();

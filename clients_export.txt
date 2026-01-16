@@ -1,0 +1,4 @@
+3:Bernard:0634567890
+1:Dupont:0612345678
+4:Durand:0645678901:durand@email.com
+2:Martin:0623456789

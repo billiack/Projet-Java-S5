@@ -11,191 +11,201 @@ package station;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println("=== Test de la Station de Lavage ===\n");
+        System.out.println("=== Station de Lavage ===\n");
+        
+        System.out.println("Vouslez-vous charger l'établissement depuis des fichiers ? (y/n)");
+        Scanner scanner = new Scanner(System.in);
+        String reponse = scanner.nextLine();
 
         // Création de l'établissement
         Etablissement station = new Etablissement("Station Lavage Express");
-        System.out.println("Établissement créé : Station Lavage Express\n");
-
-        // Ajout de clients
-        System.out.println("=== Ajout de clients ===");
-        Client client1 = station.ajouter("Dupont", "0612345678");
-        System.out.println(client1);
-
-        Client client2 = station.ajouter("Martin", "0623456789");
-        System.out.println(client2);
-
-        Client client3 = station.ajouter("Bernard", "0634567890");
-        System.out.println(client3);
-
-        Client client4 = station.ajouter("Durand", "0645678901", "durand@email.com");
-        System.out.println(client4);
-
-        // Tentative d'ajout d'un client existant
-        System.out.println("\n=== Tentative d'ajout d'un client existant ===");
-        station.ajouter("Dupont", "0612345678");
-
-        // Recherche de clients
-        System.out.println("\n=== Recherche de clients ===");
-        Client trouve1 = station.rechercher("Martin", "0623456789");
-        if (trouve1 != null) {
-            System.out.println("Client trouvé : " + trouve1);
-        } else {
-            System.out.println("Client non trouvé");
+        if (reponse.equals("y")) {
+            System.out.println("Entrez le nom du fichier clients :");
+            String fichierClients = scanner.nextLine();
+            System.out.println("Entrez le nom du fichier rendez-vous :");
+            String fichierRDV = scanner.nextLine();
+            try {
+                station.depuisFichierClients(fichierClients);
+                station.depuisFichierRDV(fichierRDV);
+                System.out.println("Établissement chargé avec succès depuis les fichiers.");
+            } catch (IOException e) {
+                System.out.println("Erreur lors du chargement des fichiers");
+            }
         }
+        // Menu de test des fonctionnalités
+        int option = -1;
+        while (option != 0) {
+        System.out.println("\nQue voulez-vous faire ?\n"
+                + "\t1. Ajouter un client\n"
+                + "\t2. Rechercher un client\n"
+                + "\t3. Comparer le nom de deux clients\n"
+                + "\t4. Tester les prestations\n"
+                + "\t5. Gérer les rendez-vous\n"
+                + "\t6. Afficher l'établissement\n"
+                + "\t0. Quitter"
+        );
+        option = Integer.parseInt(scanner.nextLine());
+        switch (option) {
+            case 1: // Ajouter un client
+                System.out.println("Entrez le nom du client :");
+                String nomClient = scanner.nextLine();
+                System.out.println("Entrez le numéro de téléphone du client :");
+                String telClient = scanner.nextLine();
+                System.out.println("Entrez l'email du client (vide si aucun) :");
+                String mailClient = scanner.nextLine();
+                if (mailClient.equals("")) {
+                    Client nouveauClient = station.ajouter(nomClient, telClient);
+                    System.out.println("Client ajouté : " + nouveauClient);
+                } else {
+                    Client nouveauClient = station.ajouter(nomClient, telClient, mailClient);
+                    System.out.println("Client ajouté : " + nouveauClient);
+                }
+                break;
+            case 2: // Rechercher un client
+                System.out.println("Entrez le nom du client à rechercher :");
+                nomClient = scanner.nextLine();
+                System.out.println("Entrez le numéro de téléphone du client à rechercher :");
+                telClient = scanner.nextLine();
+                Client clientTrouve = station.rechercher(nomClient, telClient);
+                if (clientTrouve != null) {
+                    System.out.println("Client trouvé : " + clientTrouve);
+                } else {
+                    System.out.println("Client non trouvé");
+                }
+                break;
+            case 3: // Comparer le nom de deux clients
+                System.out.println("Entrez le nom du premier client :");
+                String nomClient1 = scanner.nextLine();
+                System.out.println("Entrez le numéro de téléphone du premier client :");
+                String telClient1 = scanner.nextLine();
+                System.out.println("Entrez le nom du deuxième client :");
+                String nomClient2 = scanner.nextLine();
+                System.out.println("Entrez le numéro de téléphone du deuxième client :");
+                String telClient2 = scanner.nextLine();
+                Client c1 = station.rechercher(nomClient1, telClient1);
+                Client c2 = station.rechercher(nomClient2, telClient2);
+                if (c1 != null && c2 != null) {
+                    if (c1.placerApres(c2)) {
+                        System.out.println(c1.getNom() + " vient après " + c2.getNom());
+                    } else {
+                        System.out.println(c2.getNom() + " vient après " + c1.getNom());
+                    }
+                } else {
+                    System.out.println("Un ou les deux clients n'ont pas été trouvés.");
+                }
 
-        Client trouve2 = station.rechercher("Inconnu", "0000000000");
-        if (trouve2 != null) {
-            System.out.println("Client trouvé : " + trouve2);
-        } else {
-            System.out.println("Client non trouvé");
+                break;
+            case 4: // Tester les prestations
+                System.out.println("Choississez une prestation à tester :\n"
+                        + "1. Prestation Express\n"
+                        + "2. Prestation Sale\n"
+                        + "3. Prestation Très Sale"
+                );
+                int optionPrestation = Integer.parseInt(scanner.nextLine());
+                switch (optionPrestation) {
+                    case 1: // Prestation Express
+                        System.out.println("Entrez la catégorie du véhicule (A, B ou C) :");
+                        String categorie = scanner.nextLine();
+                        System.out.println("Nettoyage intérieur ? (y/n) :");
+                        boolean nettoyageInterieur = scanner.nextLine().equals("y");
+
+                        PrestationExpress express = new PrestationExpress(categorie, nettoyageInterieur);
+                        System.out.println("Lavage : " + express.lavage() + " €");
+                        System.out.println("Séchage : " + express.sechage() + " €");
+                        System.out.println("Total : " + express.nettoyage() + " €");
+                        break;
+                    case 2: // Prestation Sale
+                        System.out.println("Entrez la catégorie du véhicule (A, B ou C) :");
+                        categorie = scanner.nextLine();
+                        PrestationSale sale = new PrestationSale(categorie);
+                        System.out.println("Total : " + sale.nettoyage() + " €");
+                        break;
+                    case 3: // Prestation Très Sale
+                        System.out.println("Entrez la catégorie du véhicule (A, B ou C) :");
+                        categorie = scanner.nextLine();
+                        System.out.println("Entrez le type de salissure (1 à 4) :");
+                        int typeSalissure = Integer.parseInt(scanner.nextLine());
+
+                        PrestationTresSale tresSale = new PrestationTresSale(categorie, typeSalissure);
+                        System.out.println("Total : " + tresSale.nettoyage() + " €");
+                        break;
+                    default:
+                        System.out.println("Option invalide.");
+                        break;
+                }
+                break;
+            case 5: // Gérer les rendez-vous
+                System.out.println("Choississez une option de gestion des rendez-vous :\n"
+                        + "1. Planifier un rendez-vous\n"
+                        + "2. Rechercher un créneau\n"
+                        + "3. Afficher les rendez-vous\n"
+                );
+                int optionRDV = Integer.parseInt(scanner.nextLine());
+                switch (optionRDV) {
+                    case 1: // Planifier un rendez-vous
+                        station.planifier();
+                        break;
+                    case 2: // Rechercher un créneau
+                        System.out.println("Rechercher par :\n"
+                                + "1. Jour\n"
+                                + "2. Heure"
+                        );
+                        int optionRecherche = Integer.parseInt(scanner.nextLine());
+                        switch (optionRecherche) {
+                            case 1: // Jour
+                                System.out.println("Entrez la date (YYYY-MM-DD) :");
+                                LocalDate date = LocalDate.parse(scanner.nextLine());
+                                System.out.println(station.rechercher(date) + " est disponible.");
+                                break;
+                            case 2: // Heure
+                                System.out.println("Entrez l'heure (HH:MM) :");
+                                LocalTime heure = LocalTime.parse(scanner.nextLine());
+                                System.out.println(station.rechercher(heure) + " est disponible.");
+                                break;
+                            default:
+                                System.out.println("Option invalide.");
+                                break;
+                        }
+                        break;
+                    case 3: // Afficher les rendez-vous
+                        System.out.println("Entrez la date (YYYY-MM-DD) :");
+                        LocalDate dateAffichage = LocalDate.parse(scanner.nextLine());
+                        station.afficher(dateAffichage);
+                        break;
+                    default:
+                        System.out.println("Option invalide.");
+                        break;
+                }
+                break;
+            case 6: // Afficher l'établissement
+                station.afficher();
+                break;
+            case 0: // Quitter
+                break;
+            default:
+                System.out.println("Option invalide.");
+                break;
+            }
         }
-
-        // Test de la méthode placerApres
-        System.out.println("\n=== Comparaison lexicographique ===");
-        Client clientA = new Client(100, "Alice", "0600000001");
-        Client clientZ = new Client(101, "Zoe", "0600000002");
-        System.out.println("Alice > Zoe ? " + clientA.placerApres(clientZ));
-        System.out.println("Zoe > Alice ? " + clientZ.placerApres(clientA));
-
-        // Prestations Express
-        System.out.println("\n=== Prestations Express ===");
-        PrestationExpress expressA = new PrestationExpress("A", false);
-        System.out.println(expressA);
-        System.out.println("  Lavage : " + expressA.lavage() + " €");
-        System.out.println("  Séchage : " + expressA.sechage() + " €");
-        System.out.println("  Prélavage : " + expressA.prelavage() + " €");
-        System.out.println("  Total : " + expressA.nettoyage() + " €");
-
-        PrestationExpress expressC = new PrestationExpress("C", true);
-        System.out.println("\n" + expressC);
-        System.out.println("  Lavage : " + expressC.lavage() + " €");
-        System.out.println("  Séchage : " + expressC.sechage() + " €");
-        System.out.println("  Total avec nettoyage intérieur : " + expressC.nettoyage() + " €");
-
-        // Prestations Sale
-        System.out.println("\n=== Prestations Sale ===");
-        PrestationSale saleA = new PrestationSale("A");
-        System.out.println(saleA);
-        System.out.println("  Prélavage : " + saleA.prelavage() + " €");
-        System.out.println("  Lavage : " + saleA.lavage() + " €");
-        System.out.println("  Séchage : " + saleA.sechage() + " €");
-        System.out.println("  Total : " + saleA.nettoyage() + " €");
-
-        PrestationSale saleB = new PrestationSale("B");
-        System.out.println("\n" + saleB);
-        System.out.println("  Total : " + saleB.nettoyage() + " €");
-
-        PrestationSale saleC = new PrestationSale("C");
-        System.out.println("\n" + saleC);
-        System.out.println("  Total : " + saleC.nettoyage() + " €");
-
-        // Prestations Très Sale
-        System.out.println("\n=== Prestations Très Sale ===");
-        PrestationTresSale tresSale1 = new PrestationTresSale("A", 1);
-        System.out.println(tresSale1);
-        System.out.println("  Prélavage : " + tresSale1.prelavage() + " €");
-        System.out.println("  Lavage : " + tresSale1.lavage() + " €");
-        System.out.println("  Séchage : " + tresSale1.sechage() + " €");
-        System.out.println("  Total : " + tresSale1.nettoyage() + " €");
-
-        PrestationTresSale tresSale2 = new PrestationTresSale("B", 2);
-        System.out.println("\n" + tresSale2);
-        System.out.println("  Total : " + tresSale2.nettoyage() + " €");
-
-        PrestationTresSale tresSale4 = new PrestationTresSale("C", 4);
-        System.out.println("\n" + tresSale4);
-        System.out.println("  Total : " + tresSale4.nettoyage() + " €");
-
-        // Tests des nouveaux rendez-vous avec créneaux
-        System.out.println("\n=== Ajout de rendez-vous ===");
-        
-        // Test des rendez-vous express avec créneau spécifique
-        LocalDateTime creneau1 = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(9, 0));
-        RendezVous rdv1 = station.ajouter(client1, creneau1, "A", false);
-        if (rdv1 != null) {
-            System.out.println("RDV 1 ajouté : " + rdv1);
+        System.out.println("\nVoulez-vous exporter les données de l'établissement avant de quitter ? (y/n)");
+        reponse = scanner.nextLine();
+        if (reponse.equals("y")) {
+            System.out.println("Export des données de l'établissement :");
+            try {
+                station.versFichierClients("clients_export.txt");
+                station.versFichierRDV("rendezvous_export.txt");
+                System.out.println("Export réussi.");
+            } catch (IOException e) {
+                System.out.println("Erreur lors de l'export des fichiers.");
+            }
         }
-        
-        // Test des rendez-vous sale
-        LocalDateTime creneau2 = LocalDateTime.of(LocalDate.now().plusDays(2), LocalTime.of(10, 0));
-        RendezVous rdv2 = station.ajouter(client2, creneau2, "B");
-        if (rdv2 != null) {
-            System.out.println("RDV 2 ajouté : " + rdv2);
-        }
-        
-        // Test des rendez-vous très sale
-        LocalDateTime creneau3 = LocalDateTime.of(LocalDate.now().plusDays(3), LocalTime.of(14, 0));
-        RendezVous rdv3 = station.ajouter(client3, creneau3, "C", 3);
-        if (rdv3 != null) {
-            System.out.println("RDV 3 ajouté : " + rdv3);
-        }
-        
-        // Test des tentatives d'ajout sur un créneau déjà occupé
-        System.out.println("\n=== Tentative de réservation d'un créneau occupé ===");
-        station.ajouter(client4, creneau1, "A", true);
-
-        // Tests des méthodes de recherche de créneaux
-        System.out.println("\n=== Test de recherche par jour ===");
-        LocalDate jourRecherche = LocalDate.now().plusDays(1);
-        System.out.println("Recherche de créneaux pour le " + jourRecherche);
-        LocalDateTime creneauChoisi = station.rechercher(jourRecherche);
-        System.out.println("Créneau choisi: " + creneauChoisi);
-        
-        System.out.println("\n=== Test de recherche par heure ===");
-        LocalTime heureRecherche = LocalTime.of(11, 0);
-        System.out.println("Recherche de jours disponibles à " + heureRecherche);
-        LocalDateTime creneauChoisi2 = station.rechercher(heureRecherche);
-        System.out.println("Créneau choisi: " + creneauChoisi2);
-
-        // Test de la planification
-        System.out.println("\n=== Test de la planification ===");
-        station.planifier();
-
-        // Test des affichages de l'établissement
-        System.out.println("\n=== Test des affichages de l'établissement ===");
-        System.out.println("Affichage des rendez-vous du client avec l'ID 3 :");
-        station.afficher(3);
-        System.out.println("\nAffichage des rendez-vous du client avec le numéro de téléphone 0600000002 :");
-        station.afficher("0600000002");
-        System.out.println("\nAffichage des rendez-vous du client avec le nom Alice :");
-        station.afficher("Alice");
-        System.out.println("\nAffichage des rendez-vous pour le " + LocalDate.now().plusDays(2) + " :");
-        station.afficher(LocalDate.now().plusDays(2));
-        System.out.println("\nAffichage de l'établissement:");
-        station.afficher();
-
-        // Export des clients et des rendez-vous vers un fichier
-        System.out.println("\n=== Export des clients vers un fichier ===");
-        System.out.println("Export des clients réussi vers 'clients_export.txt'");
-        try {
-            station.versFichierClients("clients_export.txt");
-        } catch (IOException e) {
-            System.out.println("Erreur lors de l'export des clients : " + e.getMessage());
-        }
-        System.out.println("=== Export des rendez-vous vers un fichier ===");
-        try {
-            station.versFichierRDV("rendezvous_export.txt");
-        } catch (IOException e) {
-            System.out.println("Erreur lors de l'export des rendez-vous : " + e.getMessage());
-        }
-
-        // Import des clients et des rendez-vous depuis un fichier
-        System.out.println("\n=== Import des clients et des rendez-vous depuis un fichier ===");
-        Etablissement station2 = new Etablissement("Station 2");
-        try {
-            station2.depuisFichierClients("clients_export.txt");
-            station2.depuisFichierRDV("rendezvous_export.txt");
-            System.out.println("Import des clients et des rendez-vous réussi.");
-            station2.afficher();
-        } catch (IOException e) {
-            System.out.println("Erreur lors de l'import des clients : " + e.getMessage());
-        }
+        System.out.println("Au revoir !");
+        scanner.close();
     }
 }
-
+        

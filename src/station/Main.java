@@ -180,7 +180,7 @@ public class Main {
         }
         System.out.println("=== Export des rendez-vous vers un fichier ===");
         try {
-            station.versFichierRendezVous("rendezvous_export.txt");
+            station.versFichierRDV("rendezvous_export.txt");
         } catch (IOException e) {
             System.out.println("Erreur lors de l'export des rendez-vous : " + e.getMessage());
         }
@@ -190,7 +190,7 @@ public class Main {
         Etablissement station2 = new Etablissement("Station 2");
         try {
             station2.depuisFichierClients("clients_export.txt");
-            station2.depuisFichierRendezVous("rendezvous_export.txt");
+            station2.depuisFichierRDV("rendezvous_export.txt");
             System.out.println("Import des clients et des rendez-vous réussi.");
             station2.afficher();
         } catch (IOException e) {

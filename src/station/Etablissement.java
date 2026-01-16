@@ -482,7 +482,7 @@ public class Etablissement {
     // yyyy-MM-ddTHH:mm
     // idClient
     // categorie:typeSalissure:prix (PrestationTresSale)
-    public void versFichierRendezVous(String nomFichier) throws IOException {
+    public void versFichierRDV(String nomFichier) throws IOException {
         FileWriter writer = new FileWriter(nomFichier);
         for (int j = 0; j < 7; j++) {
             for (int i = 0; i < rendezVous.length; i++) {
@@ -494,7 +494,7 @@ public class Etablissement {
         writer.close();
     }
 
-    public void depuisFichierRendezVous(String nomFichier) throws IOException {
+    public void depuisFichierRDV(String nomFichier) throws IOException {
         FileReader reader = new FileReader(nomFichier);
         BufferedReader buffer = new BufferedReader(reader);
         String ligne;

@@ -8,26 +8,33 @@
  */
 
 package station;
+// Package regroupant les classes de la station de lavage
 
 public class Client {
+    // Classe représentant un client de la station
+
     private int id;
     private String nom;
     private String numTel;
-    private String mail;
+    private String mail; // optionnel
 
     public Client(int id, String nom, String numTel) {
+        // Constructeur pour un client sans adresse mail
         this.id = id;
         this.nom = nom;
         this.numTel = numTel;
     }
 
     public Client(int id, String nom, String numTel, String mail) {
+        // Constructeur pour un client avec adresse mail
         this.id = id;
         this.nom = nom;
         this.numTel = numTel;
         this.mail = mail;
     }
-    // Getters et setters
+
+    // Getters permettant l'accès aux attributs privés
+
     public int getId() {
         return id;
     }
@@ -44,13 +51,14 @@ public class Client {
         return mail;
     }
 
-    // Fonction pour comparer lexicographiquement deux noms de clients.
+    // Compare deux clients selon l'ordre alphabétique de leur nom
     public boolean placerApres(Client c) {
         return this.nom.compareTo(c.getNom()) > 0;
     }
 
     @Override
     public String toString() {
+        // Affichage du client avec ou sans adresse mail
         if (mail != null)
             return id + " : " + nom + " : " + numTel + " : " + mail;
         else
@@ -58,6 +66,7 @@ public class Client {
     }
 
     public String versFichier() {
+        // Format utilisé pour la sauvegarde dans un fichier texte
         if (mail != null)
             return id + ":" + nom + ":" + numTel + ":" + mail;
         else

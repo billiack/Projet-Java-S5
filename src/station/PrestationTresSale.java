@@ -10,20 +10,25 @@
 package station;
 
 public class PrestationTresSale extends Prestation {
+    // Prestation la plus complète : surcoût selon le type de salissure
 
     private int typeSalissure;
+    // Type de salissure (1 à 4)
 
     public PrestationTresSale(String categorie, int typeSalissure) {
+        // Appel du constructeur de la classe mère
         super(categorie);
         this.typeSalissure = typeSalissure;
     }
 
     public int getTypeSalissure() {
+        // Retourne le type de salissure
         return typeSalissure;
     }
 
     // Ajoute un surcoût pour les taches
     private double surcout() {
+        // Surcoût dépendant du type de salissure
         if (typeSalissure == 1) {
             return 5;
         } else if (typeSalissure == 2) {
@@ -39,6 +44,7 @@ public class PrestationTresSale extends Prestation {
 
     @Override
     public double lavage() {
+        // Prix du lavage avec ajout du surcoût
         double base;
         if (categorie.equals("A")) {
             base = 20;
@@ -52,6 +58,7 @@ public class PrestationTresSale extends Prestation {
 
     @Override
     public double sechage() {
+        // Séchage identique aux autres prestations
         if (categorie.equals("A")) {
             return 10;
         } else if (categorie.equals("B")) {
@@ -63,6 +70,7 @@ public class PrestationTresSale extends Prestation {
 
     @Override
     public double prelavage() {
+        // Prélavage avec ajout du surcoût
         double base;
         if (categorie.equals("A")) {
             base = 5;
@@ -76,7 +84,10 @@ public class PrestationTresSale extends Prestation {
 
     @Override
     public double nettoyage() {
+        // Calcul du prix total pour un véhicule très sale
         double total = prelavage() + lavage() + sechage();
+
+        // Supplément lié à la catégorie du véhicule
         if (categorie.equals("C")) {
             total += 40;
         } else {
@@ -87,7 +98,7 @@ public class PrestationTresSale extends Prestation {
 
     @Override
     public String toString() {
+        // Affichage lisible de la prestation
         return "TresSale [" + categorie + ", type=" + typeSalissure + ", prix=" + nettoyage() + "]";
     }
 }
-

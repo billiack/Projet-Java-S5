@@ -11,6 +11,7 @@ package station;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Scanner;
 
@@ -227,14 +228,24 @@ public class Main {
                                 case 1: {
                                     System.out.println("Entrez la date (YYYY-MM-DD) :");
                                     LocalDate date = LocalDate.parse(scanner.nextLine());
-                                    System.out.println(station.rechercher(date) + " est disponible.");
+                                    LocalDateTime creneau = station.rechercher(date);
+                                    if (creneau == null) {
+                                        System.out.println("Aucun créneau disponible ce jour.");
+                                    } else {
+                                        System.out.println(creneau + " est disponible.");
+                                    }
                                     break;
                                 }
 
                                 case 2: {
                                     System.out.println("Entrez l'heure (HH:MM) :");
                                     LocalTime heure = LocalTime.parse(scanner.nextLine());
-                                    System.out.println(station.rechercher(heure) + " est disponible.");
+                                    LocalDateTime creneau = station.rechercher(heure);
+                                    if (creneau == null) {
+                                        System.out.println("Aucun créneau disponible à cette heure.");
+                                    } else {
+                                        System.out.println(creneau + " est disponible.");
+                                    }
                                     break;
                                 }
 

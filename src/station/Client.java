@@ -8,11 +8,9 @@
  */
 
 package station;
-// Package regroupant les classes de la station de lavage
 
 public class Client {
     // Classe représentant un client de la station
-
     private int id;
     private String nom;
     private String numTel;
@@ -32,8 +30,6 @@ public class Client {
         this.numTel = numTel;
         this.mail = mail;
     }
-
-    // Getters permettant l'accès aux attributs privés
 
     public int getId() {
         return id;

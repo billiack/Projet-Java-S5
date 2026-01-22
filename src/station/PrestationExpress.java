@@ -13,7 +13,6 @@ public class PrestationExpress extends Prestation {
     // Prestation simple : lavage + séchage, avec option nettoyage intérieur
 
     private boolean nettoyageInterieur;
-    // Indique si le nettoyage intérieur est demandé
 
     public PrestationExpress(String categorie, boolean nettoyageInterieur) {
         // Appel du constructeur de la classe mère
@@ -22,7 +21,6 @@ public class PrestationExpress extends Prestation {
     }
 
     public boolean getNettoyageInterieur() {
-        // Permet de savoir si l'option intérieur est activée
         return nettoyageInterieur;
     }
 

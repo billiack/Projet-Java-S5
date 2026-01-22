@@ -1,5 +1,5 @@
 /*
- * Projet Java - Station de lavage (console)
+ * Projet Java
  *
  * Créé par :
  * PRAK Billy
@@ -18,7 +18,6 @@ public class Main {
 
     public static void main(String[] args) {
 
-        // Affichage d'accueil
         System.out.println("=== Station de Lavage ===\n");
 
         // Scanner pour récupérer toutes les saisies clavier de l'utilisateur
@@ -45,7 +44,6 @@ public class Main {
                 station.depuisFichierRDV(fichierRDV);
                 System.out.println("Établissement chargé avec succès depuis les fichiers.");
             } catch (IOException e) {
-                // Gestion simple d'erreur : fichier manquant / accès refusé / format incorrect, etc.
                 System.out.println("Erreur lors du chargement des fichiers");
             }
         }
@@ -54,7 +52,6 @@ public class Main {
         int option = -1;
         while (option != 0) {
 
-            // Affichage du menu
             System.out.println("\nQue voulez-vous faire ?\n"
                     + "\t1. Ajouter un client\n"
                     + "\t2. Rechercher un client\n"
@@ -65,14 +62,13 @@ public class Main {
                     + "\t0. Quitter"
             );
 
-            // Lecture de l'option utilisateur
             option = Integer.parseInt(scanner.nextLine());
 
             // Traitement selon l'option choisie
             switch (option) {
 
                 case 1: {
-                    // (2.1) Ajout d'un client
+                    // Ajout d'un client
                     System.out.println("Entrez le nom du client :");
                     String nomClient = scanner.nextLine();
 
@@ -82,7 +78,6 @@ public class Main {
                     System.out.println("Entrez l'email du client (vide si aucun) :");
                     String mailClient = scanner.nextLine();
 
-                    // Appel de la surcharge adaptée selon présence de l'email
                     if (mailClient.equals("")) {
                         Client nouveauClient = station.ajouter(nomClient, telClient);
                         System.out.println("Client ajouté : " + nouveauClient);
@@ -172,7 +167,7 @@ public class Main {
                         }
 
                         case 2: {
-                            // PrestationSale : prélavage + lavage + séchage + intérieur inclus selon votre implémentation
+                            // PrestationSale : prélavage + lavage + séchage
                             System.out.println("Entrez la catégorie du véhicule (A, B ou C) :");
                             String categorie = scanner.nextLine();
 
@@ -214,7 +209,7 @@ public class Main {
                     switch (optionRDV) {
 
                         case 1:
-                            // Planification complète : client + créneau + prestation
+                            // Planification : client + créneau + prestation
                             station.planifier();
                             break;
 
@@ -281,14 +276,13 @@ public class Main {
             }
         }
 
-        // (3) Sauvegarde optionnelle avant fermeture
+        // Sauvegarde avant la fermeture du programme
         System.out.println("\nVoulez-vous exporter les données de l'établissement avant de quitter ? (y/n)");
         reponse = scanner.nextLine();
 
         if (reponse.equals("y")) {
             System.out.println("Export des données de l'établissement :");
             try {
-                // Les noms sont fixés ici
                 station.versFichierClients("clients_export.txt");
                 station.versFichierRDV("rendezvous_export.txt");
                 System.out.println("Export réussi.");
@@ -297,7 +291,6 @@ public class Main {
             }
         }
 
-        // Fin du programme : fermeture des ressources
         System.out.println("Au revoir !");
         scanner.close();
     }

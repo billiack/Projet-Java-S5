@@ -12,7 +12,6 @@ public class RendezVous {
     // Le prix est calculé automatiquement à partir de la prestation
 
     public RendezVous(Client client, Prestation prestation, LocalDateTime creneau) {
-        // Création d'un rendez-vous avec calcul immédiat du prix
         this.client = client;
         this.prestation = prestation;
         this.creneau = creneau;
@@ -30,14 +29,12 @@ public class RendezVous {
                 '}';
     }
 
-    // Getters utilisés par l'établissement et l'export
     public Client getClient() { return client; }
     public Prestation getPrestation() { return prestation; }
     public LocalDateTime getCreneau() { return creneau; }
     public double getPrix() { return prix; }
 
     public String versFichier() {
-        // Prépare le rendez-vous pour l'écriture dans un fichier texte
         String out = creneau.toString() + "\n" + client.getId() + "\n";
 
         // Le format dépend du type réel de la prestation

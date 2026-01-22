@@ -35,7 +35,7 @@ public class PrestationSale extends Prestation {
 
     @Override
     public double prelavage() {
-        // Prélavage ajouté pour les véhicules sales
+        // Prix du prélavage selon la catégorie
         if (categorie.equals("A")) return 5;
         if (categorie.equals("B")) return 7.5;
         return 8.75;

@@ -8,7 +8,6 @@
  */
 
 package station;
-// Package principal du projet
 
 import java.time.LocalDateTime;
 import java.io.BufferedReader;
@@ -30,7 +29,6 @@ public class Etablissement {
     private LocalTime[] heures;
 
     public Etablissement(String nom) {
-        // Initialisation de l'établissement (clients + planning + créneaux)
         this.nom = nom;
         this.clients = new Client[100];
         this.nbClients = 0;
@@ -285,7 +283,6 @@ public class Etablissement {
     
     // Ajouter un rendez-vous pour un véhicule très sale
     public RendezVous ajouter(Client client, LocalDateTime creneau, String categorie, int typeSalissure) {
-        // Même principe : indices + vérifs + création + réservation
         int indexHeure = -1;
         int indexJour = -1;
         for (int i = 0; i < heures.length; i++) {
@@ -317,11 +314,10 @@ public class Etablissement {
 
     // Demande à l'utilisateur de planifier un rendez-vous
     public void planifier() {
-        // Méthode interactive : création d'un rendez-vous via saisie console
         System.out.println("La semaine de rendez-vous a été planifiée à partir du " + debutSemaine + " au " + debutSemaine.plusDays(6) + ".");
         Scanner scanner = new Scanner(System.in);
 
-        // Récupération du client (recherche ou création)
+        // Recherche ou ajout du client
         System.out.println("Entrez le nom du client : ");
         String nom = scanner.nextLine();
         System.out.println("Entrez le numéro de téléphone du client : ");
@@ -544,7 +540,6 @@ public class Etablissement {
     }
 
     public void depuisFichierRDV(String nomFichier) throws IOException {
-        // Import des rendez-vous : lecture bloc par bloc (créneau / id / infos prestation)
         FileReader reader = new FileReader(nomFichier);
         BufferedReader buffer = new BufferedReader(reader);
         String ligne;
@@ -569,7 +564,6 @@ public class Etablissement {
             String[] parts = buffer.readLine().split(":");
             RendezVous rdv = null;
             if (parts.length == 3) {
-                // Ici, on distingue express vs très sale grâce au 2e champ (bool ou typeSalissure)
                 if (parts[1].equals("true") || parts[1].equals("false")) {
                     String categorie = parts[0];
                     boolean nettoyageInterieur = Boolean.parseBoolean(parts[1]);

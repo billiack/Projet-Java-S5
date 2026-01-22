@@ -8,6 +8,8 @@
  */
 
 package station;
+// Package principal du projet
+
 import java.time.LocalDateTime;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -18,6 +20,8 @@ import java.time.LocalTime;
 import java.util.Scanner;
 
 public class Etablissement {
+    // Classe centrale : gère les clients + le planning des rendez-vous + la persistance en fichiers
+
     private String nom;
     private Client[] clients;
     private int nbClients;
@@ -26,19 +30,23 @@ public class Etablissement {
     private LocalTime[] heures;
 
     public Etablissement(String nom) {
+        // Initialisation de l'établissement (clients + planning + créneaux)
         this.nom = nom;
         this.clients = new Client[100];
         this.nbClients = 0;
+
         this.rendezVous = new RendezVous[10][7]; // ligne : créneaux, colonne : jours
-        this.debutSemaine = LocalDate.now().plusDays(1);
+        this.debutSemaine = LocalDate.now().plusDays(1); // semaine planifiée à partir de demain
+
         this.heures = new LocalTime[10];
+        // Créneaux horaires de 8h à 17h
         for (int i = 0; i < heures.length; i++) {
             heures[i] = LocalTime.of(8 + i, 0);
         }
     }
 
     private void trierClients() {
-        // Tri à bulle des clients par ordre lexicographique
+        // Tri à bulle des clients par ordre lexicographique (sur le nom)
         for (int i = 0; i < nbClients - 1; i++) {
             for (int j = 0; j < nbClients - i - 1; j++) {
                 if (clients[j].placerApres(clients[j + 1])) {
@@ -52,6 +60,7 @@ public class Etablissement {
 
     // Vérifie si un client existe déjà
     public Client rechercher(String nom, String numTel) {
+        // Recherche linéaire dans le tableau des clients
         for (int i = 0; i < nbClients; i++) {
             if (clients[i].getNom().equals(nom) && clients[i].getNumTel().equals(numTel)) {
                 return clients[i];
@@ -62,6 +71,7 @@ public class Etablissement {
 
     // Ajoute un client dans l'établissement
     public Client ajouter(String nom, String numTel) {
+        // Ajout d'un client (sans mail) avec vérifications
         if (nbClients >= clients.length) {
             System.out.println("Capacité maximale de clients atteinte.");
             return null;
@@ -73,11 +83,12 @@ public class Etablissement {
         Client nouveauClient = new Client(nbClients + 1, nom, numTel);
         clients[nbClients] = nouveauClient;
         nbClients++;
-        trierClients();
+        trierClients(); // on garde les clients triés après ajout
         return nouveauClient;
     }
 
     public Client ajouter(String nom, String numTel, String mail) {
+        // Ajout d'un client (avec mail) avec vérifications
         if (nbClients >= clients.length) {
             System.out.println("Capacité maximale de clients atteinte.");
             return null;
@@ -95,7 +106,7 @@ public class Etablissement {
     
     // Rechercher un créneau pour un jour donné
     public LocalDateTime rechercher(LocalDate jour) {
-        // Calculer l'index du jour dans la semaine (0-6)
+        // Trouve l'index du jour dans la semaine planifiée (0 à 6)
         int indexJour = -1;
         for (int j = 0; j < 7; j++) {
             if (debutSemaine.plusDays(j).equals(jour)) {
@@ -107,6 +118,8 @@ public class Etablissement {
             System.out.println("Le jour " + jour + " n'est pas dans la semaine planifiée.");
             return null;
         }
+
+        // Affiche les heures disponibles (cases vides dans le tableau rendezVous)
         System.out.println("Heures disponibles pour le " + jour + " :");
         int compteur = 0;
         for (int i = 0; i < rendezVous.length; i++) {
@@ -119,6 +132,8 @@ public class Etablissement {
             System.out.println("Aucune heure disponible pour ce jour.");
             return null;
         }
+
+        // L'utilisateur choisit une des heures disponibles
         Scanner scanner = new Scanner(System.in);
         System.out.print("Choisissez le numéro de l'heure souhaitée : ");
         int choix = scanner.nextInt();
@@ -127,6 +142,8 @@ public class Etablissement {
             System.out.println("Choix invalide.");
             return null;
         }
+
+        // Conversion du numéro choisi vers le vrai index de créneau
         int compteurTemp = 0;
         for (int i = 0; i < rendezVous.length; i++) {
             if (rendezVous[i][indexJour] == null) {
@@ -142,6 +159,7 @@ public class Etablissement {
     
     // Rechercher un créneau pour une heure donnée
     public LocalDateTime rechercher(LocalTime heure) {
+        // Trouve l'index de l'heure dans le tableau des créneaux
         int indexHeure = -1;
         for (int i = 0; i < heures.length; i++) {
             if (heures[i].equals(heure)) {
@@ -154,6 +172,8 @@ public class Etablissement {
             System.out.println("L'heure " + heure + " n'est pas un créneau proposé.");
             return null;
         }
+
+        // Affiche les jours disponibles pour cette heure
         System.out.println("Jours disponibles à " + heure + " :");
         int compteur = 0;
         for (int j = 0; j < 7; j++) {
@@ -167,6 +187,8 @@ public class Etablissement {
             System.out.println("Aucun jour disponible pour cette heure.");
             return null;
         }
+
+        // L'utilisateur choisit un des jours disponibles
         Scanner scanner = new Scanner(System.in);
         System.out.print("Choisissez le numéro du jour souhaité : ");
         int choix = scanner.nextInt();
@@ -175,6 +197,8 @@ public class Etablissement {
             System.out.println("Choix invalide.");
             return null;
         }
+
+        // Conversion du numéro choisi vers le vrai jour disponible
         int compteurTemp = 0;
         for (int j = 0; j < 7; j++) {
             if (rendezVous[indexHeure][j] == null) {
@@ -191,6 +215,7 @@ public class Etablissement {
     
     // Ajouter un rendez-vous pour une prestation express
     public RendezVous ajouter(Client client, LocalDateTime creneau, String categorie, boolean nettoyageInterieur) {
+        // Conversion du créneau en indices (heure + jour) dans le planning
         int indexHeure = -1;
         int indexJour = -1;
         
@@ -206,6 +231,8 @@ public class Etablissement {
                 break;
             }
         }
+
+        // Vérifications : créneau valide + pas déjà réservé
         if (indexHeure == -1 || indexJour == -1) {
             System.out.println("Le créneau spécifié n'est pas valide.");
             return null;
@@ -214,6 +241,8 @@ public class Etablissement {
             System.out.println("Ce créneau est déjà réservé.");
             return null;
         }
+
+        // Création de la prestation puis du rendez-vous
         PrestationExpress prestation = new PrestationExpress(categorie, nettoyageInterieur);
         RendezVous rdv = new RendezVous(client, prestation, creneau);
         rendezVous[indexHeure][indexJour] = rdv;
@@ -223,6 +252,7 @@ public class Etablissement {
     
     // Ajouter un rendez-vous pour un véhicule sale
     public RendezVous ajouter(Client client, LocalDateTime creneau, String categorie) {
+        // Même principe : on récupère l'index heure + jour puis on réserve si dispo
         int indexHeure = -1;
         int indexJour = -1;
         for (int i = 0; i < heures.length; i++) {
@@ -245,6 +275,7 @@ public class Etablissement {
             System.out.println("Ce créneau est déjà réservé.");
             return null;
         }
+
         PrestationSale prestation = new PrestationSale(categorie);
         RendezVous rdv = new RendezVous(client, prestation, creneau);
         rendezVous[indexHeure][indexJour] = rdv;
@@ -254,6 +285,7 @@ public class Etablissement {
     
     // Ajouter un rendez-vous pour un véhicule très sale
     public RendezVous ajouter(Client client, LocalDateTime creneau, String categorie, int typeSalissure) {
+        // Même principe : indices + vérifs + création + réservation
         int indexHeure = -1;
         int indexJour = -1;
         for (int i = 0; i < heures.length; i++) {
@@ -276,6 +308,7 @@ public class Etablissement {
             System.out.println("Ce créneau est déjà réservé.");
             return null;
         }
+
         PrestationTresSale prestation = new PrestationTresSale(categorie, typeSalissure);
         RendezVous rdv = new RendezVous(client, prestation, creneau);
         rendezVous[indexHeure][indexJour] = rdv;
@@ -284,8 +317,11 @@ public class Etablissement {
 
     // Demande à l'utilisateur de planifier un rendez-vous
     public void planifier() {
+        // Méthode interactive : création d'un rendez-vous via saisie console
         System.out.println("La semaine de rendez-vous a été planifiée à partir du " + debutSemaine + " au " + debutSemaine.plusDays(6) + ".");
         Scanner scanner = new Scanner(System.in);
+
+        // Récupération du client (recherche ou création)
         System.out.println("Entrez le nom du client : ");
         String nom = scanner.nextLine();
         System.out.println("Entrez le numéro de téléphone du client : ");
@@ -299,6 +335,7 @@ public class Etablissement {
             }
         }
 
+        // Choix du jour dans la semaine planifiée
         System.out.println("Choisissez un jour pour le rendez-vous.");
         for (int j = 0; j < 7; j++) {
             System.out.println((j + 1) + ". " + debutSemaine.plusDays(j));
@@ -308,8 +345,11 @@ public class Etablissement {
             System.out.println("Choix de jour invalide.");
             return;
         }
+
+        // Choix d'un créneau libre pour ce jour
         LocalDateTime creneau = rechercher(debutSemaine.plusDays(choixJour - 1));
         
+        // Choix de la prestation et paramètres
         System.out.println("Choisissez le type de prestation :\n 1. Prestation Express\n 2. Prestation Sale\n 3. Prestation Très Sale");
         int choixPrestation = scanner.nextInt();
         System.out.println("Entrez la catégorie (A, B, C) : ");
@@ -318,6 +358,8 @@ public class Etablissement {
             System.out.println("Catégorie invalide.");
             return;
         }
+
+        // Création du rendez-vous selon la prestation choisie
         if (choixPrestation == 1) {
             System.out.println("Nettoyage intérieur ? (true/false) : ");
             boolean nettoyageInterieur = scanner.nextBoolean();
@@ -347,6 +389,7 @@ public class Etablissement {
     }
     
     public void afficher() {
+        // Affichage global : établissement + clients + rendez-vous de la semaine
         System.out.println("Etablissement : " + nom);
         System.out.println("Clients :");
         for (int i = 0; i < nbClients; i++) {
@@ -370,6 +413,7 @@ public class Etablissement {
     }
 
     public void afficher(LocalDate jour) {
+        // Affiche tous les rendez-vous d'un jour donné
         System.out.println("Rendez-vous pour le " + jour + " :");
         int indexJour = -1;
         for (int j = 0; j < 7; j++) {
@@ -398,6 +442,7 @@ public class Etablissement {
 
     // Afficher le(s) client(s) de l'établissement (identifiant : nom ou numéro de téléphone)
     public void afficher(String identifiant) {
+        // Recherche par nom OU par numéro de téléphone
         System.out.println("Clients correspondant à l'identifiant \"" + identifiant + "\" :");
         boolean trouve = false;
         for (int i = 0; i < nbClients; i++) {
@@ -413,6 +458,7 @@ public class Etablissement {
 
     // Affiche les rendez-vous d'un client donné par son ID
     public void afficher(int idClient) {
+        // Parcours du planning et affichage des rendez-vous du client
         System.out.println("Rendez-vous pour le client ID " + idClient + " :");
         boolean trouve = false;
         for (int j = 0; j < 7; j++) {
@@ -432,6 +478,7 @@ public class Etablissement {
     }
 
     public void versFichierClients(String nomFichier) throws IOException {
+        // Export des clients dans un fichier texte (1 client par ligne)
         FileWriter writer;
         writer = new FileWriter(nomFichier);
         for (int i = 0; i < nbClients; i++) {
@@ -445,6 +492,7 @@ public class Etablissement {
     // idClient:nom:numTel
     // idClient:nom:numTel:mail
     public void depuisFichierClients(String nomFichier) throws IOException {
+        // Import des clients depuis un fichier texte
         FileReader reader = new FileReader(nomFichier);
         BufferedReader buffer = new BufferedReader(reader);
         String ligne;
@@ -483,6 +531,7 @@ public class Etablissement {
     // idClient
     // categorie:typeSalissure:prix (PrestationTresSale)
     public void versFichierRDV(String nomFichier) throws IOException {
+        // Export de tous les rendez-vous non nuls du planning
         FileWriter writer = new FileWriter(nomFichier);
         for (int j = 0; j < 7; j++) {
             for (int i = 0; i < rendezVous.length; i++) {
@@ -495,12 +544,15 @@ public class Etablissement {
     }
 
     public void depuisFichierRDV(String nomFichier) throws IOException {
+        // Import des rendez-vous : lecture bloc par bloc (créneau / id / infos prestation)
         FileReader reader = new FileReader(nomFichier);
         BufferedReader buffer = new BufferedReader(reader);
         String ligne;
         while ((ligne = buffer.readLine()) != null) {
             LocalDateTime creneau = LocalDateTime.parse(ligne);;
             int idClient = Integer.parseInt(buffer.readLine());
+
+            // Récupération du client correspondant à l'ID
             Client client = null;
             for (int i = 0; i < nbClients; i++) {
                 if (clients[i].getId() == idClient) {
@@ -512,9 +564,12 @@ public class Etablissement {
                 System.out.println("Client avec l'ID " + idClient + " non trouvé.");
                 continue;
             }
+
+            // Lecture et interprétation des informations de prestation
             String[] parts = buffer.readLine().split(":");
             RendezVous rdv = null;
             if (parts.length == 3) {
+                // Ici, on distingue express vs très sale grâce au 2e champ (bool ou typeSalissure)
                 if (parts[1].equals("true") || parts[1].equals("false")) {
                     String categorie = parts[0];
                     boolean nettoyageInterieur = Boolean.parseBoolean(parts[1]);
